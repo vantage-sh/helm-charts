@@ -1,0 +1,7 @@
+apiVersion: v2
+name: vantage-kubernetes-agent
+description: A Helm chart for provisioning the Vantage Kubernetes agent.
+type: application
+version: 1.0.0
+appVersion: "0.0.1"
+icon: "https://www.vantage.sh/nav-logo.svg"

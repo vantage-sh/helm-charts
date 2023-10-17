@@ -1,0 +1,82 @@
+{{- $clusterID := .Values.agent.clusterID | required ".Values.clusterID.token is required."}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "vantage-kubernetes-agent.fullname" . }}
+  labels:
+    {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  serviceName: vantage-agent
+  selector:
+    matchLabels:
+      {{- include "vantage-kubernetes-agent.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "vantage-kubernetes-agent.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "vantage-kubernetes-agent.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: VANTAGE_DEBUG
+              value: "{{ .Values.agent.debug }}"
+            - name: VANTAGE_LOG_LEVEL
+              value: "{{ .Values.agent.logLevel }}"
+            - name: VANTAGE_CLUSTER_ID
+              value: "{{ $clusterID }}"
+            - name: VANTAGE_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "vantage-kubernetes-agent.fullname" . }}
+                  key: token
+            {{- with .Values.agent.apiHost }}
+            - name: VANTAGE_API_HOST
+              value: "{{ . }}"
+            {{ end }}
+            {{- with .Values.persist }}
+            - name: VANTAGE_PERSIST_DIR
+              value: "{{ .mountPath }}"
+            {{ end }}
+          ports:
+            - name: {{ .Values.service.name }}
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.service.name }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.service.name }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.persist }}
+          volumeMounts:
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+          {{ end }}
+  {{- with .Values.persist }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .name }}
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .size }}
+  {{ end }}
