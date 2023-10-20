@@ -12,6 +12,17 @@ rules:
 - apiGroups: [""]
   resources: ["nodes/metrics"]
   verbs: ["get"]
-- apiGroups: [""]
-  resources: ["nodes", "pods"]
+- apiGroups: ["", "apps", "batch"]
+  resources:
+  - "nodes"
+  - "pods"
+  - "namespaces"
+  - "replicasets"
+  - "replicationcontrollers"
+  - "deployments"
+  - "statefulsets"
+  - "jobs"
+  - "cronjobs"
+  - "persistentvolumes"
+  - "persistentvolumeclaims"
   verbs: ["get", "watch", "list"]
