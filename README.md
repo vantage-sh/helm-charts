@@ -13,7 +13,7 @@ vantage` to see the charts.
 
 To install the `vantage-kubernetes-agent` chart:
 
-    helm install -n vantage vantage-kubernetes-agent vantage/vantage-kubernetes-agent --set agent.token=$VANTAGE_API_TOKEN,agent.clusterID=$CLUSTER_ID
+    helm upgrade -n vantage vka vantage/vantage-kubernetes-agent --install --set agent.token=$VANTAGE_API_TOKEN,agent.clusterID=$CLUSTER_ID --create-namespace
 
 To uninstall the chart:
 
