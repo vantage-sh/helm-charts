@@ -55,10 +55,6 @@ spec:
             - name: {{ .Values.service.name }}
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: {{ .Values.service.name }}
           readinessProbe:
             httpGet:
               path: /healthz
