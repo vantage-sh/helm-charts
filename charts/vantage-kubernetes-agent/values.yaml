@@ -29,14 +29,12 @@ service:
   type: ClusterIP
   port: 9010
 
-# These limits are set low to support small clusters (~10nodes) and should be considered minimum values for deploying an agent.
-# Estimates for later clusters are roughly:
-# ~2CPU/1000node
-# ~1MB/node
-# ~16KB/container
-# ie: 100 node cluster with 3000 containers (10 pods per node, 3 containers per pod) would be approximately 150MB and 200mCPU
+# These limits are set low to support small clusters (<=20nodes) and should be considered minimum values for deploying an agent.
+# Estimates for larger clusters are roughly:
+# ~1CPU/1000node
+# ~2MB/node
 # These are estimates and will vary based on node density, label usage, cluster activity, etc.
-# Agent should reach an approximate steady state after about 1hour of uptime and can be tuned accordingly after the fact.
+# Agent should reach an approximate steady state after ~1hour of consistent uptime and can be tuned accordingly.
 resources:
   limits:
     cpu: 100m
