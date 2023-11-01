@@ -18,6 +18,10 @@ agent:
   clusterID: ""
   # Vantage API Token
   token: ""
+  # If the Secret is pre-provisioned, can override the secret name and key as needed below. If name is not set a Secret using `token` is provisioned.
+  secret:
+    name: ""
+    key: "token"
 
 persist:
   mountPath: "/var/lib/vantage-agent"

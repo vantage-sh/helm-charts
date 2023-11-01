@@ -1,4 +1,4 @@
-{{- $clusterID := .Values.agent.clusterID | required ".Values.clusterID.token is required."}}
+{{- $clusterID := .Values.agent.clusterID | required ".Values.agent.clusterID is required."}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -41,8 +41,13 @@ spec:
             - name: VANTAGE_API_TOKEN
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.agent.secret.name }}
+                  name: {{ .Values.agent.secret.name }}
+                  key: {{ .Values.agent.secret.key }}
+                  {{- else }}
                   name: {{ include "vantage-kubernetes-agent.fullname" . }}
                   key: token
+                  {{- end }}
             {{- with .Values.agent.apiHost }}
             - name: VANTAGE_API_HOST
               value: "{{ . }}"
