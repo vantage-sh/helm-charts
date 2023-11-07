@@ -38,6 +38,10 @@ spec:
               value: "{{ .Values.agent.logLevel }}"
             - name: VANTAGE_CLUSTER_ID
               value: "{{ $clusterID }}"
+            {{- if .Values.agent.nodeAddressTypes}}
+            - name: VANTAGE_NODE_ADDRESS_TYPES
+              value: "{{ .Values.agent.nodeAddressTypes }}"
+            {{- end}}
             - name: VANTAGE_API_TOKEN
               valueFrom:
                 secretKeyRef:
