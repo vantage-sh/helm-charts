@@ -22,6 +22,10 @@ agent:
   secret:
     name: ""
     key: "token"
+  # Comma separated list of node address types to use in priority order when looking up node addresses.
+  # Default value works for most clusters but can be tuned if getting node hostname lookup errors.
+  # eg: "Hostname,InternalDNS,InternalIP,ExternalDNS,ExternalIP"
+  nodeAddressTypes: ""
 
 persist:
   mountPath: "/var/lib/vantage-agent"
