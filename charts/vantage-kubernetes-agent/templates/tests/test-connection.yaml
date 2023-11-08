@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: "{{ include "vantage-kubernetes-agent.fullname" . }}-test-connection"
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
   annotations:
