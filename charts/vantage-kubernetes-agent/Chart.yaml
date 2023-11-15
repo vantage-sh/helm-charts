@@ -3,5 +3,5 @@ name: vantage-kubernetes-agent
 description: Provisions the Vantage Kubernetes agent.
 type: application
 version: 1.0.15
-appVersion: "1.0.10"
+appVersion: "1.0.11"
 icon: "https://www.vantage.sh/nav-logo.svg"
