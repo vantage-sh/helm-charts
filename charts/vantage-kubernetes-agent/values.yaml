@@ -27,6 +27,9 @@ agent:
   # eg: "Hostname,InternalDNS,InternalIP,ExternalDNS,ExternalIP"
   nodeAddressTypes: ""
 
+  # Comma separated list of allowed annotations to be sent to Vantage. Max 10 annotations. Note that values are truncated after 100 chars.
+  allowedAnnotations: ""
+
 persist:
   mountPath: "/var/lib/vantage-agent"
   name: "data"
