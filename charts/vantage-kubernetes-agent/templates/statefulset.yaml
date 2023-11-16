@@ -43,6 +43,10 @@ spec:
             - name: VANTAGE_NODE_ADDRESS_TYPES
               value: "{{ .Values.agent.nodeAddressTypes }}"
             {{- end}}
+            {{- if .Values.agent.allowedAnnotations}}
+            - name: VANTAGE_ALLOWED_ANNOTATIONS
+              value: "{{ .Values.agent.allowedAnnotations }}"
+            {{- end}}
             - name: VANTAGE_API_TOKEN
               valueFrom:
                 secretKeyRef:
