@@ -47,6 +47,10 @@ spec:
             - name: VANTAGE_ALLOWED_ANNOTATIONS
               value: "{{ .Values.agent.allowedAnnotations }}"
             {{- end}}
+            {{- if .Values.agent.collectNamespaceLabels}}
+            - name: VANTAGE_COLLECT_NAMESPACE_LABELS
+              value: "{{ .Values.agent.collectNamespaceLabels }}"
+            {{- end}}
             - name: VANTAGE_API_TOKEN
               valueFrom:
                 secretKeyRef:

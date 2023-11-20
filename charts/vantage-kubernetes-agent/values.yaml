@@ -27,9 +27,11 @@ agent:
   # eg: "Hostname,InternalDNS,InternalIP,ExternalDNS,ExternalIP"
   nodeAddressTypes: ""
 
-  # Comma separated list of allowed annotations to be sent to Vantage. Max 10 annotations. Note that values are truncated after 100 chars.
+  # Optional. Comma separated list of allowed annotations to be sent to Vantage. Max 10 annotations. Note that values are truncated after 100 chars.
   allowedAnnotations: ""
 
+  # Optional. When enabled, includes the labels of that pod's namespace in the pod metadata.
+  collectNamespaceLabels: "false"
 persist:
   mountPath: "/var/lib/vantage-agent"
   name: "data"
