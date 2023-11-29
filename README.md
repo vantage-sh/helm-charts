@@ -1,3 +1,5 @@
+[![Release Charts](https://github.com/vantage-sh/helm-charts/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/vantage-sh/helm-charts/actions/workflows/release.yml)
+
 # Vantage Helm Charts
 
 This repo contains Vantage Helm Charts, including the Helm Chart for the Vantage Kubernetes agent.
