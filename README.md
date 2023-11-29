@@ -27,3 +27,7 @@ To uninstall the chart, run the following command:
     helm delete vantage-kubernetes-agent
     
 See the [Vantage Kubernetes agent product documentation](https://docs.vantage.sh/kubernetes_agent) for additional details about the agent and its functionality.
+
+## Issues
+
+If you encounter any issues with the Helm Charts, please open a GitHub issue.
