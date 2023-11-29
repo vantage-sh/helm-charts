@@ -74,7 +74,6 @@ clusterRoleBinding:
   annotations: {}
 
 podAnnotations: {}
-podSecurityContext: {}
 securityContext: {}
 nodeSelector: {}
 tolerations: []
