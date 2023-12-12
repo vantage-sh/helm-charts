@@ -2,6 +2,6 @@ apiVersion: v2
 name: vantage-kubernetes-agent
 description: Provisions the Vantage Kubernetes agent.
 type: application
-version: 1.0.21
-appVersion: "1.0.15"
+version: 1.0.22
+appVersion: "1.0.16"
 icon: "https://assets.vantage.sh/www/vantage_avatar-social.jpg"
