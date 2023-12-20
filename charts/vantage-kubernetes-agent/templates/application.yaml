@@ -1,6 +1,13 @@
+{{- if .Values.agent.useDeployment  }}
+{{- $bucket := .Values.persistS3.bucket | required ".Values.persistS3.bucket is required for Deployments."}}
+{{- end }}
 {{- $clusterID := .Values.agent.clusterID | required ".Values.agent.clusterID is required."}}
 apiVersion: apps/v1
+{{- if .Values.agent.useDeployment  }}
+kind: Deployment
+{{- else }}
 kind: StatefulSet
+{{- end }}
 metadata:
   name: {{ include "vantage-kubernetes-agent.fullname" . }}
   namespace: {{ .Release.Namespace }}
@@ -8,7 +15,12 @@ metadata:
     {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
 spec:
   replicas: 1
+  {{- if .Values.agent.useDeployment }}
+  strategy:
+    type: Recreate
+  {{- else }}
   serviceName: vantage-agent
+  {{- end }}
   selector:
     matchLabels:
       {{- include "vantage-kubernetes-agent.selectorLabels" . | nindent 6 }}
@@ -77,6 +89,14 @@ spec:
             - name: VANTAGE_API_HOST
               value: "{{ . }}"
             {{ end }}
+            {{- with .Values.persistS3.bucket }}
+            - name: VANTAGE_PERSIST_S3_BUCKET
+              value: "{{ . }}"
+            {{ end }}
+            {{- with .Values.persistS3.prefix }}
+            - name: VANTAGE_PERSIST_S3_PREFIX
+              value: "{{ . }}"
+            {{ end }}
             {{- with .Values.persist }}
             - name: VANTAGE_PERSIST_DIR
               value: "{{ .mountPath }}"
@@ -91,11 +111,15 @@ spec:
               port: {{ .Values.service.name }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+
+          {{- if not .Values.agent.useDeployment }}
           {{- with .Values.persist }}
           volumeMounts:
             - name: {{ .name }}
               mountPath: {{ .mountPath }}
-          {{ end }}
+          {{- end }}
+          {{- end }}
+  {{- if not .Values.agent.useDeployment }}
   {{- with .Values.persist }}
   volumeClaimTemplates:
   - metadata:
@@ -105,4 +129,5 @@ spec:
       resources:
         requests:
           storage: {{ .size }}
+  {{ end }}
   {{ end }}

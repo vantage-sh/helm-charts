@@ -9,6 +9,8 @@ image:
   tag: ""
 
 agent:
+  # The agent can be deployed as a Deployment instead of StatefulSet but requires persistS3 to be present.
+  useDeployment: false
   debug: false
   # logLevel corresponds to https://pkg.go.dev/log/slog#Level
   # Info: 0
@@ -36,6 +38,13 @@ persist:
   mountPath: "/var/lib/vantage-agent"
   name: "data"
   size: "10Gi"
+
+# Configuration for persisting to S3. The agent will use IAM Roles for Service Accounts to authenticate. This should be setup prior to deploying the agent. See the agent docs for what policy is necessary, https://docs.vantage.sh/kubernetes_agent
+persistS3:
+  # S3 Bucket Name
+  bucket: null
+  # Prefix prepended to the standard '$CLUSTER_ID/filename.json.gz' key the agent uses.
+  prefix: null
 
 service:
   name: report
