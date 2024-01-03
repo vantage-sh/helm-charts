@@ -12,5 +12,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "vantage-kubernetes-agent.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "vantage-kubernetes-agent.fullname" . }}:{{ .Values.service.port }}/healthz']
   restartPolicy: Never
