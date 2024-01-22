@@ -126,6 +126,9 @@ spec:
       name: {{ .name }}
     spec:
       accessModes: [ "ReadWriteOnce" ]
+      {{- if .storageClassName }}
+      storageClassName: {{ .storageClassName }}
+      {{ end }}
       resources:
         requests:
           storage: {{ .size }}
