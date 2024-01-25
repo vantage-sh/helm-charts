@@ -33,7 +33,7 @@ agent:
   allowedAnnotations: ""
 
   # Optional. Some cluster providers have self signed certificates on the kubelet. If you are seeing TLS errors, you can disable TLS verification here.
-  disableKubeletTLSverify: "false"
+  disableKubeTLSverify: "false"
 
   # Optional. When enabled, includes the labels of that pod's namespace in the pod metadata.
   collectNamespaceLabels: "false"
