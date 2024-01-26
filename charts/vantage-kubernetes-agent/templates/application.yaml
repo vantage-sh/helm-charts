@@ -63,6 +63,10 @@ spec:
               value: "{{ .Values.agent.logLevel }}"
             - name: VANTAGE_CLUSTER_ID
               value: "{{ $clusterID }}"
+            {{- if .Values.agent.disableKubeTLSverify}}
+            - name: VANTAGE_KUBE_SKIP_TLS_VERIFY
+              value: "{{ .Values.agent.disableKubeTLSverify }}"
+            {{- end}}
             {{- if .Values.agent.nodeAddressTypes}}
             - name: VANTAGE_NODE_ADDRESS_TYPES
               value: "{{ .Values.agent.nodeAddressTypes }}"
