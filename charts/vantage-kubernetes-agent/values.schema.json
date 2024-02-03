@@ -43,6 +43,9 @@
                 "token": {
                     "type": "string"
                 },
+                "apiHost": {
+                    "type": "string"
+                },
                 "useDeployment": {
                     "type": "boolean"
                 }
@@ -111,10 +114,10 @@
             "type": "object",
             "properties": {
                 "bucket": {
-                    "type": "null"
+                    "type": "string"
                 },
                 "prefix": {
-                    "type": "null"
+                    "type": "string"
                 }
             }
         },

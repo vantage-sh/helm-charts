@@ -1,16 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "vantage-kubernetes-agent.fullname" . }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
+  name: { { include "vantage-kubernetes-agent.fullname" . } }
+  namespace: { { .Release.Namespace } }
+  labels: { { - include "vantage-kubernetes-agent.labels" . | nindent 4 } }
 spec:
-  type: {{ .Values.service.type }}
+  type: { { .Values.service.type } }
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.name }}
+    - port: { { .Values.service.port } }
+      targetPort: { { .Values.service.name } }
       protocol: TCP
-      name: {{ .Values.service.name }}
+      name: { { .Values.service.name } }
   selector:
-    {{- include "vantage-kubernetes-agent.selectorLabels" . | nindent 4 }}
+    { { - include "vantage-kubernetes-agent.selectorLabels" . | nindent 4 } }

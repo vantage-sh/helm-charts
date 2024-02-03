@@ -37,6 +37,9 @@ agent:
 
   # Optional. When enabled, includes the labels of that pod's namespace in the pod metadata.
   collectNamespaceLabels: "false"
+
+  # Optional. Custom Vantage API Host. If not set, the default is used.
+  apiHost: ""
 persist:
   mountPath: "/var/lib/vantage-agent"
   name: "data"
@@ -69,11 +72,9 @@ resources:
     cpu: 100m
     memory: 50Mi
 
-
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-
 
 serviceAccount:
   annotations: {}
