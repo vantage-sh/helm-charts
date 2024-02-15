@@ -26,6 +26,7 @@ rules:
   - "replicasets"
   - "deployments"
   - "statefulsets"
+  - "daemonsets"
   verbs: ["get", "watch", "list"]
 - apiGroups: ["batch"]
   resources:
