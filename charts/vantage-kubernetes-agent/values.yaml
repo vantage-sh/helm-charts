@@ -58,16 +58,16 @@ service:
 # These limits are set low to support small clusters (<=20nodes) and should be considered minimum values for deploying an agent.
 # Estimates for larger clusters are roughly:
 # ~1CPU/1000node
-# ~2MB/node
-# These are estimates and will vary based on node density, label usage, cluster activity, etc.
+# ~5MB/node
+# These are estimates and will vary significantly based on pod density per node, label usage, cluster activity, etc.
 # Agent should reach an approximate steady state after ~1hour of consistent uptime and can be tuned accordingly.
 resources:
   limits:
     cpu: 100m
-    memory: 50Mi
+    memory: 100Mi
   requests:
     cpu: 100m
-    memory: 50Mi
+    memory: 100Mi
 
 
 imagePullSecrets: []
