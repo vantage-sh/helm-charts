@@ -46,9 +46,9 @@ persist:
 # Configuration for persisting to S3. The agent will use IAM Roles for Service Accounts to authenticate. This should be setup prior to deploying the agent. See the agent docs for what policy is necessary, https://docs.vantage.sh/kubernetes_agent
 persistS3:
   # S3 Bucket Name
-  bucket: null
+  bucket: ""
   # Prefix prepended to the standard '$CLUSTER_ID/filename.json.gz' key the agent uses.
-  prefix: null
+  prefix: ""
 
 service:
   name: report
