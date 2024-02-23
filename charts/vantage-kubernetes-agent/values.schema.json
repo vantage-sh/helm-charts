@@ -91,7 +91,7 @@
             "type": "object"
         },
         "persist": {
-            "type": "object",
+            "type": ["object", "null"],
             "properties": {
                 "mountPath": {
                     "type": "string"
@@ -111,10 +111,10 @@
             "type": "object",
             "properties": {
                 "bucket": {
-                    "type": "null"
+                    "type": "string"
                 },
                 "prefix": {
-                    "type": "null"
+                    "type": "string"
                 }
             }
         },
