@@ -86,6 +86,7 @@ clusterRole:
 clusterRoleBinding:
   annotations: {}
 
+podLabels: {}
 podAnnotations: {}
 securityContext: {}
 nodeSelector: {}
