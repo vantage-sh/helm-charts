@@ -82,6 +82,10 @@ spec:
             - name: VANTAGE_COLLECT_NAMESPACE_LABELS
               value: "{{ .Values.agent.collectNamespaceLabels }}"
             {{- end}}
+            {{- if .Values.agent.argocdRollouts}}
+            - name: VANTAGE_ARGO_ROLLOUTS
+              value: "{{ .Values.agent.argocdRollouts }}"
+            {{- end}}
             - name: VANTAGE_API_TOKEN
               valueFrom:
                 secretKeyRef:

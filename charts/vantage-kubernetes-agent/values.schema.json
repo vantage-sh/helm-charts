@@ -11,6 +11,9 @@
                 "allowedAnnotations": {
                     "type": "string"
                 },
+                "argocdRollouts": {
+                    "type": "boolean"
+                },
                 "clusterID": {
                     "type": "string"
                 },
