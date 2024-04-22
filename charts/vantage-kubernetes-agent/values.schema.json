@@ -51,6 +51,9 @@
                 }
             }
         },
+        "appLabels": {
+            "type": "object"
+        },
         "clusterRole": {
             "type": "object",
             "properties": {
