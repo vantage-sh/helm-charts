@@ -90,6 +90,7 @@ clusterRole:
 clusterRoleBinding:
   annotations: {}
 
+appLabels: {}
 podLabels: {}
 podAnnotations: {}
 securityContext: {}

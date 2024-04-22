@@ -13,6 +13,9 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
+    {{- with .Values.appLabels }}
+      {{- toYaml . | nindent 4 }}
+    {{- end}}
 spec:
   replicas: 1
   {{- if .Values.agent.useDeployment }}
