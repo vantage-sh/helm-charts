@@ -89,6 +89,10 @@ spec:
             - name: VANTAGE_ARGO_ROLLOUTS
               value: "{{ .Values.agent.argocdRollouts }}"
             {{- end}}
+            {{- if .Values.agent.reportHTTPProxy}}
+            - name: VANTAGE_REPORT_HTTP_PROXY
+              value: "{{ .Values.agent.reportHTTPProxy }}"
+            {{- end}}
             - name: VANTAGE_API_TOKEN
               valueFrom:
                 secretKeyRef:
