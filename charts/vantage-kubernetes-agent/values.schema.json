@@ -32,6 +32,9 @@
                 "nodeAddressTypes": {
                     "type": "string"
                 },
+                "reportHTTPProxy": {
+                    "type": "string"
+                },
                 "secret": {
                     "type": "object",
                     "properties": {

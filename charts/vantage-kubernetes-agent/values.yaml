@@ -41,6 +41,10 @@ agent:
   # Optional. When enabled, includes ArgoCD Rollouts within controller metadata similar to Deployments.
   argocdRollouts: false
 
+  # Optional. URL of an HTTP proxy used for external communications during the periodic report. This includes HTTP requests to the Vantage API and AWS S3. ie. http://example.com:3001
+  reportHTTPProxy: ""
+
+
 persist:
   mountPath: "/var/lib/vantage-agent"
   name: "data"
