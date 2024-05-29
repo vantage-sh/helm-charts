@@ -26,6 +26,26 @@
                 "disableKubeTLSverify": {
                     "type": "string"
                 },
+                "gpu": {
+                    "type": "object",
+                    "properties": {
+                        "exporterNamespace": {
+                            "type": "string"
+                        },
+                        "exporterPath": {
+                            "type": "string"
+                        },
+                        "exporterPortName": {
+                            "type": "string"
+                        },
+                        "exporterServiceName": {
+                            "type": "string"
+                        },
+                        "usageMetrics": {
+                            "type": "boolean"
+                        }
+                    }
+                },
                 "logLevel": {
                     "type": "string"
                 },
