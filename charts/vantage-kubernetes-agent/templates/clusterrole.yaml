@@ -33,6 +33,12 @@ rules:
   - "jobs"
   - "cronjobs"
   verbs: ["get", "watch", "list"]
+{{- if .Values.agent.gpu.usageMetrics}}
+- apiGroups: [""]
+  resources:
+  - "endpoints"
+  verbs: ["get", "watch", "list"]
+{{- end}}
 {{- if .Values.agent.argocdRollouts}}
 - apiGroups: ["argoproj.io"]
   resources:

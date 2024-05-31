@@ -44,6 +44,22 @@ agent:
   # Optional. URL of an HTTP proxy used for external communications during the periodic report. This includes HTTP requests to the Vantage API and AWS S3. ie. http://example.com:3001
   reportHTTPProxy: ""
 
+  gpu:
+    # Optional. Whether the agent should scrape GPU metrics or not. Requires NVIDIA dcgm-exporter to be deployed and configured with DCGM_FI_DEV_FB_USED and DCGM_FI_DEV_FB_TOTAL
+    usageMetrics: false
+    # Optional. The namespace the GPU exporter is deployed in.
+    # Uses agent default if not specified: "gpu-operator"
+    exporterNamespace: ""
+    # Optional. The service name for the GPU exporter. Used to lookup the endpoints.
+    # Uses agent default if not specified: "nvidia-dcgm-exporter"
+    exporterServiceName: ""
+    # Optional. The port name for the metrics port of the gpu exporter.
+    # Uses agent default if not specified: "gpu-metrics"
+    exporterPortName: ""
+    # Optional. The path the metrics endpoint is available under.
+    # Uses agent default if not specified: "/metrics"
+    exporterPath: ""
+
 
 persist:
   mountPath: "/var/lib/vantage-agent"

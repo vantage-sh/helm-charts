@@ -93,6 +93,26 @@ spec:
             - name: VANTAGE_REPORT_HTTP_PROXY
               value: "{{ .Values.agent.reportHTTPProxy }}"
             {{- end}}
+            {{- if .Values.agent.gpu.usageMetrics}}
+            - name: VANTAGE_GPU_METRICS
+              value: "true"
+            {{- end}}
+            {{- if .Values.agent.gpu.exporterNamespace}}
+            - name: VANTAGE_GPU_EXPORTER_NAMESPACE
+              value: "{{ .Values.agent.gpu.exporterNamespace }}"
+            {{- end}}
+            {{- if .Values.agent.gpu.exporterServiceName}}
+            - name: VANTAGE_GPU_EXPORTER_SERVICE_NAME
+              value: "{{ .Values.agent.gpu.exporterServiceName }}"
+            {{- end}}
+            {{- if .Values.agent.gpu.exporterPortName}}
+            - name: VANTAGE_GPU_EXPORTER_PORT_NAME
+              value: "{{ .Values.agent.gpu.exporterPortName }}"
+            {{- end}}
+            {{- if .Values.agent.gpu.exporterPath}}
+            - name: VANTAGE_GPU_EXPORTER_PATH
+              value: "{{ .Values.agent.gpu.exporterPath }}"
+            {{- end}}
             - name: VANTAGE_API_TOKEN
               valueFrom:
                 secretKeyRef:
