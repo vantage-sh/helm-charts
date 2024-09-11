@@ -183,6 +183,9 @@
         "securityContext": {
             "type": "object"
         },
+        "podSecurityContext": {
+            "type": "object"
+        },
         "service": {
             "type": "object",
             "properties": {

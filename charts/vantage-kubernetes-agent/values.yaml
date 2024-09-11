@@ -114,6 +114,7 @@ appLabels: {}
 podLabels: {}
 podAnnotations: {}
 securityContext: {}
+podSecurityContext: {}
 nodeSelector: {}
 tolerations: []
 affinity: {}
