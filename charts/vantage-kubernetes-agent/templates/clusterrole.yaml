@@ -1,3 +1,4 @@
+{{- if .Values.clusterRole.create  }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -44,4 +45,5 @@ rules:
   resources:
   - "rollouts"
   verbs: ["get", "watch", "list"]
+{{- end}}
 {{- end}}
