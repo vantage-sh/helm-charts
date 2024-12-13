@@ -24,7 +24,7 @@
                     "type": "boolean"
                 },
                 "disableKubeTLSverify": {
-                    "type": "string"
+                    "type": "boolean"
                 },
                 "gpu": {
                     "type": "object",
