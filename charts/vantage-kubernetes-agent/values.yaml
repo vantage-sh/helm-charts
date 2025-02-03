@@ -60,6 +60,8 @@ agent:
     # Uses agent default if not specified: "/metrics"
     exporterPath: ""
 
+  volumes: []
+  volumeMounts: []
 
 persist:
   mountPath: "/var/lib/vantage-agent"

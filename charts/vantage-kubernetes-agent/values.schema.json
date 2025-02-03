@@ -71,6 +71,12 @@
                 },
                 "useDeployment": {
                     "type": "boolean"
+                },
+                "volumes": {
+                    "type": "array"
+                },
+                "volumesMounts": {
+                    "type": "array"
                 }
             }
         },
