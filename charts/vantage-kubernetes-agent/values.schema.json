@@ -88,6 +88,9 @@
             "properties": {
                 "annotations": {
                     "type": "object"
+                },
+                "create": {
+                  "type": "boolean"
                 }
             }
         },
@@ -96,6 +99,9 @@
             "properties": {
                 "annotations": {
                     "type": "object"
+                },
+                "create": {
+                  "type": "boolean"
                 }
             }
         },
