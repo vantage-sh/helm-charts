@@ -138,7 +138,7 @@ spec:
             {{- with .Values.persist }}
             - name: VANTAGE_PERSIST_DIR
               value: "{{ .mountPath }}"
-            {{ end }}
+            {{- end }}
           ports:
             - name: {{ .Values.service.name }}
               containerPort: {{ .Values.service.port }}
@@ -149,14 +149,20 @@ spec:
               port: {{ .Values.service.name }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-
+          volumeMounts:
+          {{- if .Values.agent.volumeMounts }}
+          {{- toYaml .Values.agent.volumeMounts | nindent 10 }}
+          {{- end }}
           {{- if not .Values.agent.useDeployment }}
           {{- with .Values.persist }}
-          volumeMounts:
-            - name: {{ .name }}
-              mountPath: {{ .mountPath }}
+          - name: {{ .name }}
+            mountPath: {{ .mountPath }}
           {{- end }}
           {{- end }}
+      volumes:
+      {{- if .Values.agent.volumes }}
+      {{- toYaml .Values.agent.volumes | nindent 6 }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
   {{- if not .Values.agent.useDeployment }}
