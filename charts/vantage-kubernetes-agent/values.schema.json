@@ -77,6 +77,9 @@
                 },
                 "volumesMounts": {
                     "type": "array"
+                },
+                "pollingInterval": {
+                    "type": "integer"
                 }
             }
         },

@@ -139,6 +139,10 @@ spec:
             - name: VANTAGE_PERSIST_DIR
               value: "{{ .mountPath }}"
             {{- end }}
+            {{- with .Values.agent.pollingInterval }}
+            - name: VANTAGE_POLLING_INTERVAL
+              value: "{{ . }}"
+            {{- end }}
           ports:
             - name: {{ .Values.service.name }}
               containerPort: {{ .Values.service.port }}
