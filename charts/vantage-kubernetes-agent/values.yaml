@@ -111,8 +111,10 @@ serviceAccount:
   name: ""
 
 clusterRole:
+  create: true
   annotations: {}
 clusterRoleBinding:
+  create: true
   annotations: {}
 
 appLabels: {}
