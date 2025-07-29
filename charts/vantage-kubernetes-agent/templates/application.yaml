@@ -85,6 +85,10 @@ spec:
             - name: VANTAGE_COLLECT_NAMESPACE_LABELS
               value: "{{ .Values.agent.collectNamespaceLabels }}"
             {{- end}}
+            {{- if .Values.agent.collectPVCLabels}}
+            - name: VANTAGE_COLLECT_PVC_LABELS
+              value: "{{ .Values.agent.collectPVCLabels }}"
+            {{- end}}
             {{- if .Values.agent.argocdRollouts}}
             - name: VANTAGE_ARGO_ROLLOUTS
               value: "{{ .Values.agent.argocdRollouts }}"
