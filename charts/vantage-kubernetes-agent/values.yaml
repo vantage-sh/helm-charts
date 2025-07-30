@@ -38,6 +38,9 @@ agent:
   # Optional. When enabled, includes the labels of that pod's namespace in the pod metadata.
   collectNamespaceLabels: "false"
 
+  # Optional. When enabled, includes the labels of the volumes mounted to pods.
+  collectPVCLabels: "false"
+
   # Optional. When enabled, includes ArgoCD Rollouts within controller metadata similar to Deployments.
   argocdRollouts: false
 
