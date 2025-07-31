@@ -176,7 +176,9 @@ spec:
   {{- if not .Values.agent.useDeployment }}
   {{- with .Values.persist }}
   volumeClaimTemplates:
-  - metadata:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
       name: {{ .name }}
     spec:
       accessModes: [ "ReadWriteOnce" ]
