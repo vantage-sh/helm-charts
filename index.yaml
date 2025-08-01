@@ -2,6 +2,17 @@ apiVersion: v1
 entries:
   vantage-kubernetes-agent:
   - apiVersion: v2
+    appVersion: 1.0.31
+    created: "2025-08-01T00:26:12.220715Z"
+    description: Provisions the Vantage Kubernetes agent.
+    digest: c814cb4f5828eb40029182680e84017829582833f450e452e5b3f132c30316cc
+    icon: https://assets.vantage.sh/www/vantage_avatar-social.jpg
+    name: vantage-kubernetes-agent
+    type: application
+    urls:
+    - https://github.com/vantage-sh/helm-charts/releases/download/vantage-kubernetes-agent-1.2.0/vantage-kubernetes-agent-1.2.0.tgz
+    version: 1.2.0
+  - apiVersion: v2
     appVersion: 1.0.30
     created: "2025-07-31T19:11:05.663885021Z"
     description: Provisions the Vantage Kubernetes agent.
@@ -496,4 +507,4 @@ entries:
     urls:
     - https://github.com/vantage-sh/helm-charts/releases/download/vantage-kubernetes-agent-1.0.1/vantage-kubernetes-agent-1.0.1.tgz
     version: 1.0.1
-generated: "2025-07-31T19:11:05.664335726Z"
+generated: "2025-08-01T00:26:12.221247461Z"
