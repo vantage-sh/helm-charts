@@ -50,6 +50,9 @@ agent:
   # Optional. Number of seconds between scrapes of the kubelet metrics endpoint. Values are 60, 30, 15, 10, or 5
   pollingInterval: 60
 
+  # Optional. Limit the number of resources returned in the initial lists used to populate informers. 0 can be used to return to the previous behavior of listing all resources.
+  listLimit: 5000
+
   gpu:
     # Optional. Whether the agent should scrape GPU metrics or not. Requires NVIDIA dcgm-exporter to be deployed and configured with DCGM_FI_DEV_FB_USED and DCGM_FI_DEV_FB_TOTAL
     usageMetrics: false

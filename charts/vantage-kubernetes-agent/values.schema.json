@@ -83,6 +83,9 @@
                 },
                 "pollingInterval": {
                     "type": "integer"
+                },
+                "listLimit": {
+                    "type": "integer"
                 }
             }
         },

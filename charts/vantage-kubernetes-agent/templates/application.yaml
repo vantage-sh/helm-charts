@@ -121,6 +121,10 @@ spec:
             - name: VANTAGE_GPU_EXPORTER_PATH
               value: "{{ .Values.agent.gpu.exporterPath }}"
             {{- end}}
+            {{- if .Values.agent.listLimit}}
+            - name: VANTAGE_LIST_LIMIT
+              value: "{{ .Values.agent.listLimit }}"
+            {{- end}}
             - name: VANTAGE_API_TOKEN
               valueFrom:
                 secretKeyRef:
