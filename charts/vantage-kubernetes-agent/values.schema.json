@@ -20,6 +20,9 @@
                 "collectNamespaceLabels": {
                     "type": "string"
                 },
+                "collectPVCLabels": {
+                    "type": "string"
+                },
                 "debug": {
                     "type": "boolean"
                 },
