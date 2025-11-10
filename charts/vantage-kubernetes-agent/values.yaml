@@ -142,3 +142,7 @@ podSecurityContext: {}
 nodeSelector: {}
 tolerations: []
 affinity: {}
+# Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+podDisruptionBudget: {}
+  # maxUnavailable: 1
+  # minAvailable: 1

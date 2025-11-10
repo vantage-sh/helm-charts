@@ -1,0 +1,17 @@
+{{- if .Values.podDisruptionBudget }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "vantage-kubernetes-agent.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
+    {{- with .Values.appLabels }}
+      {{- toYaml . | nindent 4 }}
+    {{- end}}
+spec:
+  selector:
+    matchLabels:
+      {{- include "vantage-kubernetes-agent.selectorLabels" . | nindent 6 }}
+  {{- toYaml .Values.podDisruptionBudget | nindent 2 }}
+{{- end }}

@@ -228,6 +228,18 @@
         },
         "tolerations": {
             "type": "array"
+        },
+        "podDisruptionBudget": {
+            "type": "object",
+            "properties": {
+                "maxUnavailable": {
+                    "type": ["integer", "string"]
+                },
+                "minAvailable": {
+                    "type": ["integer", "string"]
+                }
+            }
         }
+
     }
 }
