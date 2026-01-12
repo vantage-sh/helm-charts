@@ -34,9 +34,9 @@ rules:
   - "cronjobs"
   verbs: ["get", "watch", "list"]
 {{- if .Values.agent.gpu.usageMetrics}}
-- apiGroups: [""]
+- apiGroups: ["discovery.k8s.io"]
   resources:
-  - "endpoints"
+  - "endpointslices"
   verbs: ["get", "watch", "list"]
 {{- end}}
 {{- if .Values.agent.argocdRollouts}}
