@@ -23,3 +23,31 @@ jobs:
         uses: helm/chart-releaser-action@v1.5.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Update release notes from kubernetes-agent
+        env:
+          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          CHART_DIR="charts/vantage-kubernetes-agent"
+          APP_VERSION=$(grep '^appVersion:' "$CHART_DIR/Chart.yaml" | awk '{print $2}' | tr -d '"')
+          CHART_VERSION=$(grep '^version:' "$CHART_DIR/Chart.yaml" | awk '{print $2}')
+          RELEASE_TAG="vantage-kubernetes-agent-${CHART_VERSION}"
+
+          # Check if chart-releaser created this release
+          if ! gh release view "$RELEASE_TAG" &>/dev/null; then
+            echo "Release $RELEASE_TAG not found (version unchanged), skipping"
+            exit 0
+          fi
+
+          # Fetch release notes from kubernetes-agent repo
+          NOTES=$(gh release view "v${APP_VERSION}" --repo vantage-sh/kubernetes-agent --json body -q .body 2>/dev/null || true)
+
+          if [ -z "$NOTES" ]; then
+            echo "No release notes found for kubernetes-agent v${APP_VERSION}, skipping"
+            exit 0
+          fi
+
+          # Update the helm-charts release with the kubernetes-agent notes
+          printf '%s' "$NOTES" > /tmp/release-notes.md
+          gh release edit "$RELEASE_TAG" --notes-file /tmp/release-notes.md
+          echo "Updated $RELEASE_TAG with notes from kubernetes-agent v${APP_VERSION}"
