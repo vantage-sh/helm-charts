@@ -81,6 +81,9 @@
                 "volumesMounts": {
                     "type": "array"
                 },
+                "extraEnv": {
+                    "type": "array"
+                },
                 "pollingInterval": {
                     "type": "integer"
                 },

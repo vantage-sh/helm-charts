@@ -72,6 +72,25 @@ agent:
   volumes: []
   volumeMounts: []
 
+  # Optional. Additional environment variables to pass to the agent container.
+  # Entries are rendered verbatim and appended after the chart's built-in
+  # VANTAGE_* variables, so you can also use `valueFrom` (e.g. secretKeyRef).
+  #
+  # Useful for configuring AWS credentials on non-EKS clusters when using
+  # `persistS3.bucket` - for example, GKE clusters using AWS IAM OIDC
+  # federation via a projected ServiceAccount token mounted through
+  # `agent.volumes` / `agent.volumeMounts`.
+  #
+  # Do not redefine any VANTAGE_* variables the chart already renders; doing
+  # so will produce a duplicate env entry and fail pod admission.
+  extraEnv: []
+  #   - name: AWS_ROLE_ARN
+  #     value: arn:aws:iam::123456789012:role/vantage-agent-s3
+  #   - name: AWS_WEB_IDENTITY_TOKEN_FILE
+  #     value: /var/run/secrets/aws-iam/token
+  #   - name: AWS_REGION
+  #     value: us-east-1
+
 # Specifies the pod DNS configuration.
 dnsConfig: {}
 #  nameservers:

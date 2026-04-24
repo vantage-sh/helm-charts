@@ -155,6 +155,9 @@ spec:
             - name: VANTAGE_POLLING_INTERVAL
               value: "{{ . }}"
             {{- end }}
+            {{- with .Values.agent.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           ports:
             - name: {{ .Values.service.name }}
               containerPort: {{ .Values.service.port }}
