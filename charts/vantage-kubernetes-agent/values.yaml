@@ -32,6 +32,9 @@ agent:
   # Optional. Comma separated list of allowed annotations to be sent to Vantage. Max 10 annotations. Note that values are truncated after 100 chars.
   allowedAnnotations: ""
 
+  # Optional. Comma separated list of allowed labels to be sent to Vantage. Max 10 labels.
+  allowedLabels: ""
+
   # Optional. Some cluster providers have self signed certificates on the kubelet. If you are seeing TLS errors, you can disable TLS verification here.
   disableKubeTLSverify: false
 
@@ -136,11 +139,9 @@ resources:
     cpu: 100m
     memory: 100Mi
 
-
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-
 
 serviceAccount:
   annotations: {}
