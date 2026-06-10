@@ -56,3 +56,21 @@ Create the name of the service account to use
 {{- define "vantage-kubernetes-agent.serviceAccountName" -}}
 {{- default (include "vantage-kubernetes-agent.fullname" .) .Values.serviceAccount.name }}
 {{- end }}
+
+{{/*
+Name used for the network-collector resources (DaemonSet, ServiceAccount, RBAC).
+*/}}
+{{- define "vantage-kubernetes-agent.networkCollector.fullname" -}}
+{{- printf "%s-network-collector" (include "vantage-kubernetes-agent.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Pod selector labels for the network-collector. The `app` label MUST stay equal
+to `vantage-network-collector` because the agent discovers collectors by listing
+pods with the label selector `app=vantage-network-collector`.
+*/}}
+{{- define "vantage-kubernetes-agent.networkCollector.selectorLabels" -}}
+app: vantage-network-collector
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/component: network-collector
+{{- end }}

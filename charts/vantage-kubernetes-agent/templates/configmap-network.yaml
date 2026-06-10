@@ -1,0 +1,26 @@
+{{- if and .Values.agent.networkCost.enabled (not .Values.agent.networkCost.existingConfigMap) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "vantage-kubernetes-agent.fullname" . }}-network-subnets
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
+data:
+  subnets.yaml: |
+    subnets:
+    {{- range .Values.agent.networkCost.subnets }}
+      - cidr: {{ .cidr | quote }}
+        {{- with .zone }}
+        zone: {{ . | quote }}
+        {{- end }}
+        {{- with .region }}
+        region: {{ . | quote }}
+        {{- end }}
+    {{- end }}
+    overrides:
+    {{- range .Values.agent.networkCost.overrides }}
+      - cidr: {{ .cidr | quote }}
+        bucket: {{ .bucket | quote }}
+    {{- end }}
+{{- end }}

@@ -72,6 +72,47 @@ agent:
     # Uses agent default if not specified: "/metrics"
     exporterPath: ""
 
+  # Optional. Per-node network cost collection. When enabled, the chart deploys
+  # the vantage-network-collector DaemonSet (reads conntrack to attribute pod
+  # network traffic to billing buckets) and tells the agent to pull per-pod
+  # byte summaries from it each report cycle.
+  #
+  # Requires an agent/collector image that includes the network collector
+  # (override image.tag if the chart appVersion predates it).
+  networkCost:
+    # When false (default) no DaemonSet, ConfigMap, collector RBAC, or agent
+    # network env vars are rendered.
+    enabled: false
+    # gRPC port the collector listens on and the agent dials. Single source of
+    # truth shared by the DaemonSet containerPort/VANTAGE_ADDR and the agent's
+    # VANTAGE_NETWORK_COLLECTOR_PORT.
+    port: 9012
+    # Optional. Override the collector image. Defaults to the top-level image.*
+    # values when left empty.
+    image:
+      repository: ""
+      tag: ""
+    # Required (unless existingConfigMap is set). List of VPC/VNet subnet CIDRs
+    # with zone/region info, rendered into the vantage-network-subnets ConfigMap.
+    # Each entry: { cidr: "10.0.0.0/8", zone: "us-east-1a", region: "us-east-1" }.
+    # zone is optional; region is derived from zone when omitted. Include IPv6
+    # CIDRs on dual-stack / IPv6 clusters or that traffic falls through to the
+    # internet bucket.
+    subnets: []
+    # Optional. List of CIDR->bucket overrides that win over subnet matches.
+    # Each entry: { cidr: "203.0.113.0/24", bucket: "internet" }.
+    # bucket is one of: in_zone, in_region, cross_region, internet, unknown.
+    overrides: []
+    # Optional. Name of a pre-existing ConfigMap holding subnets.yaml. When set,
+    # the chart does not render its own ConfigMap and `subnets`/`overrides` are
+    # ignored.
+    existingConfigMap: ""
+    # Optional. Resource requests/limits for the collector container.
+    resources: {}
+    # Optional. Scheduling controls for the collector DaemonSet.
+    tolerations: []
+    nodeSelector: {}
+
   volumes: []
   volumeMounts: []
 

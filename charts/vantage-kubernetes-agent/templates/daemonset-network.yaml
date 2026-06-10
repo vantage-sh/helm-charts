@@ -1,0 +1,76 @@
+{{- if .Values.agent.networkCost.enabled }}
+{{- $cm := .Values.agent.networkCost.existingConfigMap | default (printf "%s-network-subnets" (include "vantage-kubernetes-agent.fullname" .)) }}
+{{- $repo := .Values.agent.networkCost.image.repository | default .Values.image.repository }}
+{{- $tag := .Values.agent.networkCost.image.tag | default .Values.image.tag | default .Chart.AppVersion }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "vantage-kubernetes-agent.networkCollector.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "vantage-kubernetes-agent.networkCollector.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}
+      # hostNetwork is required so conntrack on the node is visible to the collector.
+      hostNetwork: true
+      {{- with .Values.agent.networkCost.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.agent.networkCost.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: network-collector
+          image: "{{ $repo }}:{{ $tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/network-collector"]
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN"]
+          ports:
+            - name: grpc
+              containerPort: {{ .Values.agent.networkCost.port }}
+              protocol: TCP
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: VANTAGE_ADDR
+              value: ":{{ .Values.agent.networkCost.port }}"
+            - name: VANTAGE_LOG_LEVEL
+              value: "{{ .Values.agent.logLevel }}"
+          {{- with .Values.agent.networkCost.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: subnets
+              mountPath: /etc/vantage
+              readOnly: true
+      volumes:
+        - name: subnets
+          configMap:
+            name: {{ $cm }}
+{{- end }}
