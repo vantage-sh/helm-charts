@@ -31,6 +31,7 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}
       # hostNetwork is required so conntrack on the node is visible to the collector.
+      # Nodes must also have net.netfilter.nf_conntrack_acct=1 or byte counters are zero.
       hostNetwork: true
       {{- with .Values.agent.networkCost.nodeSelector }}
       nodeSelector:

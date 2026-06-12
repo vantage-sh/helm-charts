@@ -79,6 +79,12 @@ agent:
   #
   # Requires an agent/collector image that includes the network collector
   # (override image.tag if the chart appVersion predates it).
+  #
+  # Node prerequisite: net.netfilter.nf_conntrack_acct=1 on every node. The
+  # kernel leaves conntrack byte counters at zero when this is off (the default
+  # on many images), so the collector cannot attribute traffic. Enable it
+  # cluster-wide before generating traffic; only new connections get counters.
+  # See the repo README "Conntrack byte accounting" section for details.
   networkCost:
     # When false (default) no DaemonSet, ConfigMap, collector RBAC, or agent
     # network env vars are rendered.

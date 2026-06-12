@@ -38,6 +38,28 @@ pod network traffic to billing buckets (in-zone, in-region, cross-region, intern
 the agent pulls per-pod byte summaries from it each report cycle. When `enabled=false`
 (the default) none of these resources are rendered.
 
+### Conntrack byte accounting (required)
+
+The collector bills on per-flow byte counters from the kernel conntrack table. Those
+counters stay at zero unless **`net.netfilter.nf_conntrack_acct=1`** is set on every
+node ([kernel docs](https://www.kernel.org/doc/html/latest/networking/nf_conntrack-sysctl.html)).
+Many node images ship with this disabled by default. Without it the collector sees flows
+but reports zero bytes, so no pod network costs are attributed.
+
+Enable it cluster-wide **before** generating traffic — the kernel only counts bytes on
+connections opened *after* accounting is turned on. Verify on a node:
+
+    sysctl net.netfilter.nf_conntrack_acct   # should print 1
+
+To make it persistent across reboots, add a host sysctl drop-in (exact path varies by OS):
+
+    echo 'net.netfilter.nf_conntrack_acct=1' | sudo tee /etc/sysctl.d/99-vantage-conntrack-acct.conf
+    sudo sysctl --system
+
+On managed node groups that do not expose bootstrap hooks (for example EKS AL2023 managed
+node groups), apply the setting with a small privileged tuning DaemonSet or your platform's
+node-configuration mechanism. The chart does not set this sysctl for you.
+
 Traffic is classified by matching each flow's remote IP against a customer-provided
 CIDR -> zone/region map supplied via `agent.networkCost.subnets`. CIDRs are matched
 within the same IP family, so on dual-stack / IPv6 clusters you must include your IPv6
