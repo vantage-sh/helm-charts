@@ -159,6 +159,12 @@ spec:
             - name: VANTAGE_POLLING_INTERVAL
               value: "{{ . }}"
             {{- end }}
+            {{- if .Values.agent.networkCost.enabled }}
+            - name: VANTAGE_NETWORK_METRICS
+              value: "true"
+            - name: VANTAGE_NETWORK_COLLECTOR_PORT
+              value: "{{ .Values.agent.networkCost.port }}"
+            {{- end }}
             {{- with .Values.agent.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

@@ -1,0 +1,44 @@
+{{- if .Values.agent.networkCost.enabled }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}
+  labels:
+    {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
+rules:
+# The resolver lists/watches pods scoped to its own node (via a field selector
+# applied in code, which RBAC cannot enforce) and reads the node object for
+# zone/region labels.
+- apiGroups: [""]
+  resources:
+  - "pods"
+  - "nodes"
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources:
+  - "configmaps"
+  verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}
+  labels:
+    {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

@@ -30,6 +30,67 @@ To uninstall the chart, run the following command:
     
 See the [Vantage Kubernetes agent product documentation](https://docs.vantage.sh/kubernetes_agent) for additional details about the agent and its functionality.
 
+## Network cost collection (optional)
+
+Set `agent.networkCost.enabled=true` to deploy the per-node `vantage-network-collector`
+DaemonSet alongside the agent. The collector reads conntrack on each node to attribute
+pod network traffic to billing buckets (in-zone, in-region, cross-region, internet), and
+the agent pulls per-pod byte summaries from it each report cycle. When `enabled=false`
+(the default) none of these resources are rendered.
+
+### Conntrack byte accounting (required)
+
+The collector bills on per-flow byte counters from the kernel conntrack table. Those
+counters stay at zero unless **`net.netfilter.nf_conntrack_acct=1`** is set on every
+node ([kernel docs](https://www.kernel.org/doc/html/latest/networking/nf_conntrack-sysctl.html)).
+Many node images ship with this disabled by default. Without it the collector sees flows
+but reports zero bytes, so no pod network costs are attributed.
+
+Enable it cluster-wide **before** generating traffic — the kernel only counts bytes on
+connections opened *after* accounting is turned on. Verify on a node:
+
+    sysctl net.netfilter.nf_conntrack_acct   # should print 1
+
+To make it persistent across reboots, add a host sysctl drop-in (exact path varies by OS):
+
+    echo 'net.netfilter.nf_conntrack_acct=1' | sudo tee /etc/sysctl.d/99-vantage-conntrack-acct.conf
+    sudo sysctl --system
+
+On managed node groups that do not expose bootstrap hooks (for example EKS AL2023 managed
+node groups), apply the setting with a small privileged tuning DaemonSet or your platform's
+node-configuration mechanism. The chart does not set this sysctl for you.
+
+Traffic is classified by matching each flow's remote IP against a customer-provided
+CIDR -> zone/region map supplied via `agent.networkCost.subnets`. CIDRs are matched
+within the same IP family, so on dual-stack / IPv6 clusters you must include your IPv6
+pod, service, and VPC ranges or that traffic falls through to the `internet` bucket.
+
+```yaml
+agent:
+  networkCost:
+    enabled: true
+    # port: 9012                     # collector listen + agent dial port (default 9012)
+    subnets:
+      - cidr: "10.0.0.0/16"
+        region: "us-east-1"
+        zone: "us-east-1a"
+      - cidr: "2600:1f18:abcd::/56"  # IPv6 / dual-stack clusters
+        region: "us-east-1"
+    # overrides:                     # optional CIDR -> bucket forcing list
+    #   - cidr: "203.0.113.0/24"
+    #     bucket: "internet"
+    # existingConfigMap: ""          # BYO ConfigMap with subnets.yaml instead of inline subnets
+```
+
+### Discovering subnet CIDRs
+
+- **AWS**: VPC CIDRs `aws ec2 describe-vpcs --query 'Vpcs[].{v4:CidrBlock,v6:Ipv6CidrBlockAssociationSet[0].Ipv6CidrBlock}'`; per-AZ subnets `aws ec2 describe-subnets --query 'Subnets[].{cidr:CidrBlock,az:AvailabilityZone}'`.
+- **GCP**: `gcloud compute networks subnets list --format='table(name,region,ipCidrRange,ipv6CidrRange)'`.
+- **Azure**: `az network vnet subnet list --resource-group <rg> --vnet-name <vnet> --query '[].{name:name,prefixes:addressPrefixes}'`.
+
+Map each subnet's CIDR to the AWS/GCP zone (or region) it lives in so cross-AZ traffic
+is billed as `in_zone` / `in_region` rather than `cross_region` or `internet`.
+
 ## Issues
 
 If you encounter any issues with the Helm Charts, please open a GitHub issue.

@@ -92,6 +92,73 @@
                 },
                 "listLimit": {
                     "type": "integer"
+                },
+                "networkCost": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "port": {
+                            "type": "integer"
+                        },
+                        "image": {
+                            "type": "object",
+                            "properties": {
+                                "repository": {
+                                    "type": "string"
+                                },
+                                "tag": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "subnets": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "cidr": {
+                                        "type": "string"
+                                    },
+                                    "zone": {
+                                        "type": "string"
+                                    },
+                                    "region": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["cidr"]
+                            }
+                        },
+                        "overrides": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "cidr": {
+                                        "type": "string"
+                                    },
+                                    "bucket": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["cidr", "bucket"]
+                            }
+                        },
+                        "existingConfigMap": {
+                            "type": "string"
+                        },
+                        "resources": {
+                            "type": "object"
+                        },
+                        "tolerations": {
+                            "type": "array"
+                        },
+                        "nodeSelector": {
+                            "type": "object"
+                        }
+                    }
                 }
             }
         },
