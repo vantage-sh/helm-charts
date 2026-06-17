@@ -102,6 +102,16 @@
                         "port": {
                             "type": "integer"
                         },
+                        "source": {
+                            "type": "string",
+                            "enum": ["conntrack", "ebpf"]
+                        },
+                        "cgroupRoot": {
+                            "type": "string"
+                        },
+                        "ebpfDebug": {
+                            "type": "boolean"
+                        },
                         "image": {
                             "type": "object",
                             "properties": {

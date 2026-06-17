@@ -73,17 +73,18 @@ agent:
     exporterPath: ""
 
   # Optional. Per-node network cost collection. When enabled, the chart deploys
-  # the vantage-network-collector DaemonSet (reads conntrack to attribute pod
-  # network traffic to billing buckets) and tells the agent to pull per-pod
-  # byte summaries from it each report cycle.
+  # the vantage-network-collector DaemonSet (reads conntrack or eBPF flow data
+  # to attribute pod network traffic to billing buckets) and tells the agent to
+  # pull per-pod byte summaries from it each report cycle.
   #
   # Requires an agent/collector image that includes the network collector
   # (override image.tag if the chart appVersion predates it).
   #
-  # Node prerequisite: net.netfilter.nf_conntrack_acct=1 on every node. The
-  # kernel leaves conntrack byte counters at zero when this is off (the default
-  # on many images), so the collector cannot attribute traffic. Enable it
-  # cluster-wide before generating traffic; only new connections get counters.
+  # Conntrack source prerequisite: net.netfilter.nf_conntrack_acct=1 on every
+  # node. The kernel leaves conntrack byte counters at zero when this is off
+  # (the default on many images), so the collector cannot attribute traffic.
+  # Enable it cluster-wide before generating traffic; only new connections get
+  # counters.
   # See the repo README "Conntrack byte accounting" section for details.
   networkCost:
     # When false (default) no DaemonSet, ConfigMap, collector RBAC, or agent
@@ -93,6 +94,16 @@ agent:
     # truth shared by the DaemonSet containerPort/VANTAGE_ADDR and the agent's
     # VANTAGE_NETWORK_COLLECTOR_PORT.
     port: 9012
+    # Flow data source. Use "conntrack" for the kernel netfilter conntrack table
+    # or "ebpf" for the collector's own cgroup eBPF accounting program. Use
+    # "ebpf" on clusters whose datapath bypasses kernel conntrack.
+    source: "conntrack"
+    # Host cgroup v2 mount to attach the eBPF accounting programs to. Only used
+    # when source is "ebpf"; the chart mounts the host path at this location.
+    cgroupRoot: "/sys/fs/cgroup"
+    # Optional. Log per-poll eBPF flow/delta counts. Only used when source is
+    # "ebpf".
+    ebpfDebug: false
     # Optional. Override the collector image. Defaults to the top-level image.*
     # values when left empty.
     image:

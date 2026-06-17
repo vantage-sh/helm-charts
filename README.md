@@ -33,12 +33,12 @@ See the [Vantage Kubernetes agent product documentation](https://docs.vantage.sh
 ## Network cost collection (optional)
 
 Set `agent.networkCost.enabled=true` to deploy the per-node `vantage-network-collector`
-DaemonSet alongside the agent. The collector reads conntrack on each node to attribute
-pod network traffic to billing buckets (in-zone, in-region, cross-region, internet), and
-the agent pulls per-pod byte summaries from it each report cycle. When `enabled=false`
-(the default) none of these resources are rendered.
+DaemonSet alongside the agent. The collector reads conntrack or its own eBPF accounting
+program on each node to attribute pod network traffic to billing buckets (in-zone,
+in-region, cross-region, internet), and the agent pulls per-pod byte summaries from it
+each report cycle. When `enabled=false` (the default) none of these resources are rendered.
 
-### Conntrack byte accounting (required)
+### Conntrack byte accounting (conntrack source)
 
 The collector bills on per-flow byte counters from the kernel conntrack table. Those
 counters stay at zero unless **`net.netfilter.nf_conntrack_acct=1`** is set on every
@@ -60,6 +60,18 @@ On managed node groups that do not expose bootstrap hooks (for example EKS AL202
 node groups), apply the setting with a small privileged tuning DaemonSet or your platform's
 node-configuration mechanism. The chart does not set this sysctl for you.
 
+### Flow data source (conntrack or eBPF)
+
+`agent.networkCost.source` defaults to `conntrack`. On clusters where the CNI datapath
+bypasses kernel netfilter (for example, Cilium with kube-proxy replacement), set
+`agent.networkCost.source=ebpf` to use the collector's cgroup eBPF accounting program
+instead.
+
+The eBPF source does not require `net.netfilter.nf_conntrack_acct=1`. It does require a
+node kernel >= 5.8 with BTF and cgroup v2. When `source: ebpf`, the chart mounts the host
+cgroup root (`agent.networkCost.cgroupRoot`, default `/sys/fs/cgroup`) and grants the
+collector `CAP_BPF`, `CAP_PERFMON`, and `CAP_NET_ADMIN`.
+
 Traffic is classified by matching each flow's remote IP against a customer-provided
 CIDR -> zone/region map supplied via `agent.networkCost.subnets`. CIDRs are matched
 within the same IP family, so on dual-stack / IPv6 clusters you must include your IPv6
@@ -70,6 +82,9 @@ agent:
   networkCost:
     enabled: true
     # port: 9012                     # collector listen + agent dial port (default 9012)
+    # source: "conntrack"            # use "ebpf" on clusters bypassing kernel conntrack
+    # cgroupRoot: "/sys/fs/cgroup"   # only used when source is "ebpf"
+    # ebpfDebug: false               # only used when source is "ebpf"
     subnets:
       - cidr: "10.0.0.0/16"
         region: "us-east-1"
