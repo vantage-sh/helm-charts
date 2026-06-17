@@ -89,9 +89,10 @@ agent:
     # When false (default) no DaemonSet, ConfigMap, collector RBAC, or agent
     # network env vars are rendered.
     enabled: false
-    # gRPC port the collector listens on and the agent dials. Single source of
-    # truth shared by the DaemonSet containerPort/VANTAGE_ADDR and the agent's
-    # VANTAGE_NETWORK_COLLECTOR_PORT.
+    # gRPC port the collector listens on. The headless Service exposes this as
+    # port name "grpc"; the agent dials collectors via EndpointSlices for that
+    # port name. The chart also passes the numeric value to the agent so the
+    # collector listen address and agent dial settings stay in sync.
     port: 9012
     # Optional. Override the collector image. Defaults to the top-level image.*
     # values when left empty.
