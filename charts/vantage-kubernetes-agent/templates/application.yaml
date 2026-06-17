@@ -168,6 +168,8 @@ spec:
               value: "{{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}"
             - name: VANTAGE_NETWORK_COLLECTOR_PORT_NAME
               value: "grpc"
+            - name: VANTAGE_NETWORK_COLLECTOR_PORT
+              value: "{{ .Values.agent.networkCost.port }}"
             {{- end }}
             {{- with .Values.agent.extraEnv }}
             {{- toYaml . | nindent 12 }}
@@ -201,15 +203,17 @@ spec:
   {{- if not .Values.agent.useDeployment }}
   {{- with .Values.persist }}
   volumeClaimTemplates:
-  - metadata:
-      name: {{ .name }}
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      {{- if .storageClassName }}
-      storageClassName: {{ .storageClassName }}
-      {{ end }}
-      resources:
-        requests:
-          storage: {{ .size }}
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: {{ .name }}
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        {{- if .storageClassName }}
+        storageClassName: {{ .storageClassName }}
+        {{ end }}
+        resources:
+          requests:
+            storage: {{ .size }}
   {{ end }}
   {{ end }}
