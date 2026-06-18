@@ -2,6 +2,7 @@
 {{- $cm := .Values.agent.networkCost.existingConfigMap | default (printf "%s-network-subnets" (include "vantage-kubernetes-agent.fullname" .)) }}
 {{- $repo := .Values.agent.networkCost.image.repository | default .Values.image.repository }}
 {{- $tag := .Values.agent.networkCost.image.tag | default .Values.image.tag | default .Chart.AppVersion }}
+{{- $source := .Values.agent.networkCost.source | default "conntrack" }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -30,8 +31,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}
-      # hostNetwork is required so conntrack on the node is visible to the collector.
-      # Nodes must also have net.netfilter.nf_conntrack_acct=1 or byte counters are zero.
+      # hostNetwork lets the collector observe node-local flow accounting.
+      # Conntrack mode also requires net.netfilter.nf_conntrack_acct=1 on nodes.
       hostNetwork: true
       {{- with .Values.agent.networkCost.nodeSelector }}
       nodeSelector:
@@ -41,6 +42,10 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.agent.networkCost.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: network-collector
           image: "{{ $repo }}:{{ $tag }}"
@@ -48,7 +53,11 @@ spec:
           command: ["/network-collector"]
           securityContext:
             capabilities:
+              {{- if eq $source "ebpf" }}
+              add: ["BPF", "PERFMON", "NET_ADMIN"]
+              {{- else }}
               add: ["NET_ADMIN"]
+              {{- end }}
           ports:
             - name: grpc
               containerPort: {{ .Values.agent.networkCost.port }}
@@ -62,6 +71,14 @@ spec:
               value: ":{{ .Values.agent.networkCost.port }}"
             - name: VANTAGE_LOG_LEVEL
               value: "{{ .Values.agent.logLevel }}"
+            - name: VANTAGE_SOURCE
+              value: "{{ $source }}"
+            {{- if eq $source "ebpf" }}
+            - name: VANTAGE_CGROUP_ROOT
+              value: "{{ .Values.agent.networkCost.cgroupRoot }}"
+            - name: VANTAGE_EBPF_DEBUG
+              value: "{{ .Values.agent.networkCost.ebpfDebug }}"
+            {{- end }}
           {{- with .Values.agent.networkCost.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
@@ -70,8 +87,19 @@ spec:
             - name: subnets
               mountPath: /etc/vantage
               readOnly: true
+            {{- if eq $source "ebpf" }}
+            - name: cgroup
+              mountPath: {{ .Values.agent.networkCost.cgroupRoot }}
+              readOnly: true
+            {{- end }}
       volumes:
         - name: subnets
           configMap:
             name: {{ $cm }}
+        {{- if eq $source "ebpf" }}
+        - name: cgroup
+          hostPath:
+            path: {{ .Values.agent.networkCost.cgroupRoot }}
+            type: Directory
+        {{- end }}
 {{- end }}
