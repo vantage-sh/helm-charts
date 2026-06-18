@@ -167,6 +167,9 @@
                         },
                         "nodeSelector": {
                             "type": "object"
+                        },
+                        "affinity": {
+                            "type": "object"
                         }
                     }
                 }

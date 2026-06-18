@@ -126,9 +126,15 @@ agent:
     existingConfigMap: ""
     # Optional. Resource requests/limits for the collector container.
     resources: {}
-    # Optional. Scheduling controls for the collector DaemonSet.
+    # Optional. Scheduling controls for the collector DaemonSet. The collector
+    # is a DaemonSet meant to run on every node, but Kubernetes will not place
+    # it on nodes carrying custom taints unless a matching toleration is set
+    # here. Add tolerations for any tainted nodes you want network costs from
+    # (or omit them to intentionally skip those nodes).
     tolerations: []
     nodeSelector: {}
+    # Optional. Node affinity/anti-affinity rules for the collector DaemonSet.
+    affinity: {}
 
   volumes: []
   volumeMounts: []

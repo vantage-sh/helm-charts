@@ -97,6 +97,38 @@ agent:
     # existingConfigMap: ""          # BYO ConfigMap with subnets.yaml instead of inline subnets
 ```
 
+### Scheduling on tainted nodes
+
+The collector is a DaemonSet, so it tries to run on every node. Kubernetes will
+**not** schedule it onto nodes that carry custom taints unless the collector pod
+has a matching toleration. If some of your nodes are tainted (a common setup for
+dedicated, GPU, or system node pools), the collector skips them and you get no
+network cost data for the pods running there.
+
+It is up to you to decide which nodes the collector should run on. Use
+`agent.networkCost.tolerations` to allow it onto tainted nodes, and
+`agent.networkCost.nodeSelector` / `agent.networkCost.affinity` to constrain it
+to (or away from) specific nodes. These apply only to the collector DaemonSet
+and are independent of the top-level `tolerations` / `nodeSelector` / `affinity`
+used by the agent workload.
+
+```yaml
+agent:
+  networkCost:
+    enabled: true
+    tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "gpu"
+        effect: "NoSchedule"
+    # nodeSelector:                  # only run the collector on matching nodes
+    #   kubernetes.io/os: linux
+    # affinity: {}                   # standard pod affinity/anti-affinity rules
+    subnets:
+      - cidr: "10.0.0.0/16"
+        region: "us-east-1"
+```
+
 ### Discovering subnet CIDRs
 
 - **AWS**: VPC CIDRs `aws ec2 describe-vpcs --query 'Vpcs[].{v4:CidrBlock,v6:Ipv6CidrBlockAssociationSet[0].Ipv6CidrBlock}'`; per-AZ subnets `aws ec2 describe-subnets --query 'Subnets[].{cidr:CidrBlock,az:AvailabilityZone}'`.
