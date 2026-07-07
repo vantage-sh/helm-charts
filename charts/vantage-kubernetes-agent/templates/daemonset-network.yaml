@@ -70,8 +70,26 @@ spec:
             - name: subnets
               mountPath: /etc/vantage
               readOnly: true
+            {{- if .Values.agent.networkCost.discovery.enabled }}
+            # Agent-discovered subnet ConfigMap, mounted as a directory (not
+            # subPath) so the kubelet refreshes the file in place and the
+            # collector's loader hot-reloads it. The default collector path is
+            # /etc/vantage/discovered/subnets.yaml, matching this mount + the
+            # ConfigMap's subnets.yaml key.
+            - name: discovered-subnets
+              mountPath: /etc/vantage/discovered
+              readOnly: true
+            {{- end }}
       volumes:
         - name: subnets
           configMap:
             name: {{ $cm }}
+        {{- if .Values.agent.networkCost.discovery.enabled }}
+        # Optional so the collector starts before the agent has written the
+        # discovered ConfigMap for the first time.
+        - name: discovered-subnets
+          configMap:
+            name: {{ .Values.agent.networkCost.discovery.configMapName }}
+            optional: true
+        {{- end }}
 {{- end }}

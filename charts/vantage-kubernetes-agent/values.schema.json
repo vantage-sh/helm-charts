@@ -157,6 +157,29 @@
                         },
                         "nodeSelector": {
                             "type": "object"
+                        },
+                        "discovery": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean"
+                                },
+                                "region": {
+                                    "type": "string"
+                                },
+                                "tagKey": {
+                                    "type": "string"
+                                },
+                                "tagValue": {
+                                    "type": "string"
+                                },
+                                "interval": {
+                                    "type": "string"
+                                },
+                                "configMapName": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
