@@ -168,8 +168,6 @@ spec:
               value: "{{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}"
             - name: VANTAGE_NETWORK_COLLECTOR_PORT_NAME
               value: "grpc"
-            - name: VANTAGE_NETWORK_COLLECTOR_PORT
-              value: "{{ .Values.agent.networkCost.port }}"
             {{- end }}
             {{- with .Values.agent.extraEnv }}
             {{- toYaml . | nindent 12 }}
