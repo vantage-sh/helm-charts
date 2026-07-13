@@ -162,8 +162,12 @@ spec:
             {{- if .Values.agent.networkCost.enabled }}
             - name: VANTAGE_NETWORK_METRICS
               value: "true"
-            - name: VANTAGE_NETWORK_COLLECTOR_PORT
-              value: "{{ .Values.agent.networkCost.port }}"
+            - name: VANTAGE_NETWORK_COLLECTOR_NAMESPACE
+              value: "{{ .Release.Namespace }}"
+            - name: VANTAGE_NETWORK_COLLECTOR_SERVICE_NAME
+              value: "{{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}"
+            - name: VANTAGE_NETWORK_COLLECTOR_PORT_NAME
+              value: "grpc"
             {{- end }}
             {{- with .Values.agent.extraEnv }}
             {{- toYaml . | nindent 12 }}

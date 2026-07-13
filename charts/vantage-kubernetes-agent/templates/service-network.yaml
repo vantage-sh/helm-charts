@@ -1,0 +1,26 @@
+{{- if .Values.agent.networkCost.enabled }}
+# Headless Service fronting the network-collector DaemonSet. With clusterIP:
+# None the Service has no virtual IP; instead its DNS name resolves to the
+# A/AAAA records of every collector pod, which is how the agent enumerates the
+# per-node collectors to talk to (the DaemonSet "Communicating with daemon
+# Pods" DNS pattern). publishNotReadyAddresses is set because the collector
+# currently has no readiness probe, so endpoints would otherwise lag pod start.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
+    app.kubernetes.io/component: network-collector
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    {{- include "vantage-kubernetes-agent.networkCollector.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: grpc
+      port: {{ .Values.agent.networkCost.port }}
+      targetPort: grpc
+      protocol: TCP
+{{- end }}
