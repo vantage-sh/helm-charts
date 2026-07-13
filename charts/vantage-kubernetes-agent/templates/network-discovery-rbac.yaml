@@ -1,6 +1,6 @@
 {{- if and .Values.agent.networkCost.enabled .Values.agent.networkCost.discovery.enabled }}
 # When AWS network discovery is enabled the agent renders the discovered subnet
-# topology into an agent-owned ConfigMap via server-side apply (VAN-1787). This
+# topology into an agent-owned ConfigMap via server-side apply. This
 # namespaced Role grants the agent ServiceAccount only the ConfigMap verbs it
 # needs in the release namespace; the manual (Helm-owned) subnet ConfigMap is a
 # separate object the agent never mutates.
