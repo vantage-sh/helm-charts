@@ -168,6 +168,34 @@ spec:
               value: "{{ include "vantage-kubernetes-agent.networkCollector.fullname" . }}"
             - name: VANTAGE_NETWORK_COLLECTOR_PORT_NAME
               value: "grpc"
+            - name: VANTAGE_NETWORK_COLLECTOR_PORT
+              value: "{{ .Values.agent.networkCost.port }}"
+            {{- if .Values.agent.networkCost.discovery.enabled }}
+            - name: VANTAGE_AWS_NETWORK_DISCOVERY
+              value: "true"
+            {{- with .Values.agent.networkCost.discovery.region }}
+            - name: VANTAGE_AWS_REGION
+              value: "{{ . }}"
+            {{- end }}
+            {{- with .Values.agent.networkCost.discovery.tagKey }}
+            - name: VANTAGE_SUBNET_DISCOVERY_TAG_KEY
+              value: "{{ . }}"
+            {{- end }}
+            {{- with .Values.agent.networkCost.discovery.tagValue }}
+            - name: VANTAGE_SUBNET_DISCOVERY_TAG_VALUE
+              value: "{{ . }}"
+            {{- end }}
+            {{- with .Values.agent.networkCost.discovery.interval }}
+            - name: VANTAGE_AWS_DISCOVERY_INTERVAL
+              value: "{{ . }}"
+            {{- end }}
+            # The agent writes the discovered ConfigMap into its own namespace so
+            # it matches the collector's mount below (see daemonset-network.yaml).
+            - name: VANTAGE_DISCOVERED_SUBNETS_CONFIGMAP
+              value: "{{ .Values.agent.networkCost.discovery.configMapName }}"
+            - name: VANTAGE_DISCOVERED_SUBNETS_CONFIGMAP_NAMESPACE
+              value: "{{ .Release.Namespace }}"
+            {{- end }}
             {{- end }}
             {{- with .Values.agent.extraEnv }}
             {{- toYaml . | nindent 12 }}

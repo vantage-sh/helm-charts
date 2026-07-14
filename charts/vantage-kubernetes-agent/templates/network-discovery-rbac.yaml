@@ -1,0 +1,34 @@
+{{- if and .Values.agent.networkCost.enabled .Values.agent.networkCost.discovery.enabled }}
+# When AWS network discovery is enabled the agent renders the discovered subnet
+# topology into an agent-owned ConfigMap via server-side apply. This
+# namespaced Role grants the agent ServiceAccount only the ConfigMap verbs it
+# needs in the release namespace; the manual (Helm-owned) subnet ConfigMap is a
+# separate object the agent never mutates.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "vantage-kubernetes-agent.fullname" . }}-network-discovery
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "vantage-kubernetes-agent.fullname" . }}-network-discovery
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "vantage-kubernetes-agent.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "vantage-kubernetes-agent.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ include "vantage-kubernetes-agent.fullname" . }}-network-discovery
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

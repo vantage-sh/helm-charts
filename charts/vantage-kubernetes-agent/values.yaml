@@ -122,6 +122,46 @@ agent:
     # (or omit them to intentionally skip those nodes).
     tolerations: []
     nodeSelector: {}
+    # Optional. Agent-side AWS network discovery. When enabled, the agent uses
+    # the EC2 API to discover VPC subnets, route tables, and S3 prefix lists and
+    # writes the result to an agent-owned "discovered" subnet ConfigMap that the
+    # collector hot-reloads. This supplements the manual `subnets` list above so
+    # per-subnet S3 egress paths (gateway-endpoint vs NAT/IGW) are classified
+    # from live AWS topology instead of only hand-authored CIDRs.
+    #
+    # Requires:
+    #   - networkCost.enabled = true (the collector consumes the discovered CM).
+    #   - An agent/collector image that includes AWS network discovery (override
+    #     image.tag if the chart appVersion predates it).
+    #   - EC2 read permissions on the agent ServiceAccount (IRSA / EKS Pod
+    #     Identity): ec2:DescribeSubnets, ec2:DescribeRouteTables,
+    #     ec2:DescribeManagedPrefixLists, ec2:GetManagedPrefixListEntries.
+    # The agent is fail-closed: without permissions it logs once and stays off,
+    # so enabling this on a cluster that lacks EC2 access is a no-op.
+    discovery:
+      # When true, renders the agent discovery env vars, the namespaced RBAC the
+      # agent needs to write the discovered ConfigMap, and mounts that ConfigMap
+      # into the collector.
+      enabled: false
+      # Optional. AWS region override. When empty the agent resolves the region
+      # from IMDS, then a node's topology.kubernetes.io/region label. Set this on
+      # clusters where IMDS is restricted.
+      region: ""
+      # Optional. Tag key used to seed subnet discovery (find the cluster's
+      # VPCs). Defaults in-agent to the Karpenter discovery tag
+      # (karpenter.sh/discovery) when left empty.
+      tagKey: ""
+      # Optional but recommended. Tag value paired with tagKey (e.g. the EKS
+      # cluster name) to scope discovery in shared VPCs. When empty, any subnet
+      # carrying tagKey matches (looser).
+      tagValue: ""
+      # Optional. Re-discovery interval as a Go duration (e.g. "10m"). Minimum
+      # 1m; the agent default is used when left empty.
+      interval: ""
+      # Name of the agent-owned ConfigMap the discovered topology is written to
+      # and the collector reads. Kept separate from the manual ConfigMap so a
+      # discovery refresh (or a `helm upgrade`) never clobbers manual entries.
+      configMapName: "vantage-network-subnets-discovered"
 
   volumes: []
   volumeMounts: []
