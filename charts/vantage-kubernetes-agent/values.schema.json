@@ -158,6 +158,9 @@
                         "nodeSelector": {
                             "type": "object"
                         },
+                        "affinity": {
+                            "type": "object"
+                        },
                         "discovery": {
                             "type": "object",
                             "properties": {

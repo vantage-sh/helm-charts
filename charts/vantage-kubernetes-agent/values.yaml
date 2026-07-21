@@ -122,6 +122,10 @@ agent:
     # (or omit them to intentionally skip those nodes).
     tolerations: []
     nodeSelector: {}
+    # Optional. Pod affinity, anti-affinity, and node affinity rules for the
+    # collector DaemonSet. For example, use required node affinity to exclude
+    # Fargate or hybrid nodes where the collector cannot access conntrack.
+    affinity: {}
     # Optional. Agent-side AWS network discovery. When enabled, the agent uses
     # the EC2 API to discover VPC subnets, route tables, and S3 prefix lists and
     # writes the result to an agent-owned "discovered" subnet ConfigMap that the
