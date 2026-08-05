@@ -115,6 +115,9 @@ agent:
     existingConfigMap: ""
     # Optional. Resource requests/limits for the collector container.
     resources: {}
+    # Optional. Annotations applied only to network collector pods. Values here
+    # override duplicate keys from the chart-level podAnnotations map.
+    podAnnotations: {}
     # Optional. Scheduling controls for the collector DaemonSet. The collector
     # is a DaemonSet meant to run on every node, but Kubernetes will not place
     # it on nodes carrying custom taints unless a matching toleration is set

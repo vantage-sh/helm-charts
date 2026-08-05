@@ -152,6 +152,9 @@
                         "resources": {
                             "type": "object"
                         },
+                        "podAnnotations": {
+                            "type": "object"
+                        },
                         "tolerations": {
                             "type": "array"
                         },

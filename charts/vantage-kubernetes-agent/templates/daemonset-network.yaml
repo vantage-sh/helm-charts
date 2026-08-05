@@ -2,6 +2,7 @@
 {{- $cm := .Values.agent.networkCost.existingConfigMap | default (printf "%s-network-subnets" (include "vantage-kubernetes-agent.fullname" .)) }}
 {{- $repo := .Values.agent.networkCost.image.repository | default .Values.image.repository }}
 {{- $tag := .Values.agent.networkCost.image.tag | default .Values.image.tag | default .Chart.AppVersion }}
+{{- $podAnnotations := mergeOverwrite (dict) (.Values.podAnnotations | default dict) (.Values.agent.networkCost.podAnnotations | default dict) }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -20,7 +21,7 @@ spec:
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-      {{- with .Values.podAnnotations }}
+      {{- with $podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
