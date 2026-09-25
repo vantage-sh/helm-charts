@@ -331,6 +331,9 @@
         "tolerations": {
             "type": "array"
         },
+        "priorityClassName": {
+            "type": "string"
+        },
         "podDisruptionBudget": {
             "type": "object",
             "properties": {

@@ -260,6 +260,11 @@ podSecurityContext: {}
 nodeSelector: {}
 tolerations: []
 affinity: {}
+# priorityClassName maps to PodSpec.priorityClassName on the vantage-kubernetes-agent
+# pod (Deployment or StatefulSet). Leave empty to omit the field entirely. When set,
+# the named PriorityClass must already exist in the cluster; the chart does not
+# create it.
+priorityClassName: ""
 # Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
 podDisruptionBudget: {}
   # maxUnavailable: 1
