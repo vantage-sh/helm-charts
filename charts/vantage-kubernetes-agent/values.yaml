@@ -129,6 +129,24 @@ agent:
     # collector DaemonSet. For example, use required node affinity to exclude
     # Fargate or hybrid nodes where the collector cannot access conntrack.
     affinity: {}
+    # Optional. Probes for the collector container. The collector serves gRPC
+    # on the "grpc" port and Prometheus metrics on the "metrics" port (8883);
+    # the defaults check that the gRPC listener the agent dials accepts TCP
+    # connections. Set either to null to omit it. Helm merges these maps with
+    # your overrides, so to switch handler (e.g. httpGet on /metrics) also set
+    # `tcpSocket: null`.
+    readinessProbe:
+      tcpSocket:
+        port: grpc
+      periodSeconds: 10
+      timeoutSeconds: 5
+    livenessProbe:
+      tcpSocket:
+        port: grpc
+      initialDelaySeconds: 15
+      periodSeconds: 30
+      timeoutSeconds: 5
+      failureThreshold: 6
     # Optional. Agent-side AWS network discovery. When enabled, the agent uses
     # the EC2 API to discover VPC subnets, route tables, and S3 prefix lists and
     # writes the result to an agent-owned "discovered" subnet ConfigMap that the
@@ -169,6 +187,18 @@ agent:
       # and the collector reads. Kept separate from the manual ConfigMap so a
       # discovery refresh (or a `helm upgrade`) never clobbers manual entries.
       configMapName: "vantage-network-subnets-discovered"
+
+  # Optional. Liveness probe for the agent container. Empty (the default) renders
+  # no livenessProbe. The agent's readinessProbe (GET /healthz on the report
+  # port) is always rendered. Example using the same endpoint:
+  livenessProbe: {}
+  #   httpGet:
+  #     path: /healthz
+  #     port: report
+  #   initialDelaySeconds: 30
+  #   periodSeconds: 30
+  #   timeoutSeconds: 5
+  #   failureThreshold: 6
 
   volumes: []
   volumeMounts: []

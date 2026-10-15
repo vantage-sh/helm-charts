@@ -78,6 +78,9 @@
                 "useDeployment": {
                     "type": "boolean"
                 },
+                "livenessProbe": {
+                    "type": "object"
+                },
                 "volumes": {
                     "type": "array"
                 },
@@ -162,6 +165,12 @@
                             "type": "object"
                         },
                         "affinity": {
+                            "type": "object"
+                        },
+                        "readinessProbe": {
+                            "type": "object"
+                        },
+                        "livenessProbe": {
                             "type": "object"
                         },
                         "discovery": {

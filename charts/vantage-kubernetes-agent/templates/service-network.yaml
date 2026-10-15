@@ -3,8 +3,9 @@
 # None the Service has no virtual IP; instead its DNS name resolves to the
 # A/AAAA records of every collector pod, which is how the agent enumerates the
 # per-node collectors to talk to (the DaemonSet "Communicating with daemon
-# Pods" DNS pattern). publishNotReadyAddresses is set because the collector
-# currently has no readiness probe, so endpoints would otherwise lag pod start.
+# Pods" DNS pattern). publishNotReadyAddresses is set so endpoints are
+# published at pod start regardless of the collector's (optional) readiness
+# probe.
 apiVersion: v1
 kind: Service
 metadata:

@@ -211,6 +211,10 @@ spec:
             httpGet:
               path: /healthz
               port: {{ .Values.service.name }}
+          {{- with .Values.agent.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
