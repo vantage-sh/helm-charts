@@ -70,6 +70,14 @@ spec:
               value: ":{{ .Values.agent.networkCost.port }}"
             - name: VANTAGE_LOG_LEVEL
               value: "{{ .Values.agent.logLevel }}"
+          {{- with .Values.agent.networkCost.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.agent.networkCost.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.agent.networkCost.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
