@@ -176,6 +176,16 @@
                         "discovery": {
                             "type": "object",
                             "properties": {
+                                "provider": {
+                                    "type": "string",
+                                    "enum": ["aws", "azure"]
+                                },
+                                "azureClusterResourceID": {
+                                    "type": "string"
+                                },
+                                "azureVNetResourceID": {
+                                    "type": "string"
+                                },
                                 "enabled": {
                                     "type": "boolean"
                                 },

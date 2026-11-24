@@ -35,7 +35,11 @@ spec:
       {{- end }}
       labels:
         {{- include "vantage-kubernetes-agent.selectorLabels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
+        {{- $labels := deepCopy (.Values.podLabels | default dict) }}
+        {{- if and .Values.agent.networkCost.enabled .Values.agent.networkCost.discovery.enabled (eq .Values.agent.networkCost.discovery.provider "azure") }}
+        {{- $_ := set $labels "azure.workload.identity/use" "true" }}
+        {{- end }}
+        {{- with $labels }}
           {{- toYaml . | nindent 8 }}
         {{- end}}
     spec:
@@ -174,6 +178,16 @@ spec:
             - name: VANTAGE_NETWORK_COLLECTOR_PORT
               value: "{{ .Values.agent.networkCost.port }}"
             {{- if .Values.agent.networkCost.discovery.enabled }}
+            {{- if eq .Values.agent.networkCost.discovery.provider "azure" }}
+            - name: VANTAGE_AZURE_NETWORK_DISCOVERY
+              value: "true"
+            - name: VANTAGE_AZURE_CLUSTER_RESOURCE_ID
+              value: {{ required "AKS discovery requires agent.networkCost.discovery.azureClusterResourceID" .Values.agent.networkCost.discovery.azureClusterResourceID | quote }}
+            {{- with .Values.agent.networkCost.discovery.azureVNetResourceID }}
+            - name: VANTAGE_AZURE_VNET_RESOURCE_ID
+              value: {{ . | quote }}
+            {{- end }}
+            {{- else }}
             - name: VANTAGE_AWS_NETWORK_DISCOVERY
               value: "true"
             {{- with .Values.agent.networkCost.discovery.region }}
@@ -188,8 +202,9 @@ spec:
             - name: VANTAGE_SUBNET_DISCOVERY_TAG_VALUE
               value: "{{ . }}"
             {{- end }}
+            {{- end }}
             {{- with .Values.agent.networkCost.discovery.interval }}
-            - name: VANTAGE_AWS_DISCOVERY_INTERVAL
+            - name: VANTAGE_{{ $.Values.agent.networkCost.discovery.provider | upper }}_DISCOVERY_INTERVAL
               value: "{{ . }}"
             {{- end }}
             # The agent writes the discovered ConfigMap into its own namespace so
