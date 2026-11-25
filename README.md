@@ -120,6 +120,33 @@ agent:
         region: "us-east-1"
 ```
 
+### AKS network discovery
+
+To enable Azure network discovery, save these Helm values as `aks-values.yaml`.
+Replace the example cluster name and Azure IDs. The example references an existing
+Secret named `vantage-api-token` with the Vantage API token in its `token` key.
+For installation, configure AKS Workload Identity and grant the managed identity
+read access to the cluster and its network resources.
+
+```yaml
+agent:
+  clusterID: "my-aks-cluster"
+  secret:
+    name: "vantage-api-token"
+  networkCost:
+    enabled: true
+    discovery:
+      enabled: true
+      provider: azure
+      azureClusterResourceID: "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.ContainerService/managedClusters/my-aks-cluster"
+serviceAccount:
+  annotations:
+    azure.workload.identity/client-id: "<managed-identity-client-id>"
+```
+
+Render the example from the repository root with
+`helm template vka charts/vantage-kubernetes-agent -n vantage -f aks-values.yaml`.
+
 ### Discovering subnet CIDRs
 
 - **AWS**: VPC CIDRs `aws ec2 describe-vpcs --query 'Vpcs[].{v4:CidrBlock,v6:Ipv6CidrBlockAssociationSet[0].Ipv6CidrBlock}'`; per-AZ subnets `aws ec2 describe-subnets --query 'Subnets[].{cidr:CidrBlock,az:AvailabilityZone}'`.

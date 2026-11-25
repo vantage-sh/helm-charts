@@ -147,27 +147,22 @@ agent:
       periodSeconds: 30
       timeoutSeconds: 5
       failureThreshold: 6
-    # Optional. Agent-side AWS network discovery. When enabled, the agent uses
-    # the EC2 API to discover VPC subnets, route tables, and S3 prefix lists and
-    # writes the result to an agent-owned "discovered" subnet ConfigMap that the
-    # collector hot-reloads. This supplements the manual `subnets` list above so
-    # per-subnet S3 egress paths (gateway-endpoint vs NAT/IGW) are classified
-    # from live AWS topology instead of only hand-authored CIDRs.
-    #
-    # Requires:
-    #   - networkCost.enabled = true (the collector consumes the discovered CM).
-    #   - An agent/collector image that includes AWS network discovery (override
-    #     image.tag if the chart appVersion predates it).
-    #   - EC2 read permissions on the agent ServiceAccount (IRSA / EKS Pod
-    #     Identity): ec2:DescribeSubnets, ec2:DescribeRouteTables,
-    #     ec2:DescribeManagedPrefixLists, ec2:GetManagedPrefixListEntries.
-    # The agent is fail-closed: without permissions it logs once and stays off,
-    # so enabling this on a cluster that lacks EC2 access is a no-op.
+    # Discover network topology using the agent ServiceAccount and publish it
+    # to the ConfigMap mounted by the network collector. Requires an agent and
+    # collector image supporting the selected provider.
     discovery:
       # When true, renders the agent discovery env vars, the namespaced RBAC the
       # agent needs to write the discovered ConfigMap, and mounts that ConfigMap
       # into the collector.
       enabled: false
+      # AWS uses EC2 read permissions via IRSA or EKS Pod Identity. Azure uses
+      # AKS Workload Identity via the agent ServiceAccount's client-id annotation.
+      provider: aws
+      # Required for Azure. Full resource ID of this managed cluster.
+      azureClusterResourceID: ""
+      # Optional fallback when agent pools omit subnet IDs and the node
+      # resource group contains multiple VNets.
+      azureVNetResourceID: ""
       # Optional. AWS region override. When empty the agent resolves the region
       # from IMDS, then a node's topology.kubernetes.io/region label. Set this on
       # clusters where IMDS is restricted.
