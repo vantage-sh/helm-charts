@@ -204,7 +204,7 @@ spec:
             {{- end }}
             {{- end }}
             {{- with .Values.agent.networkCost.discovery.interval }}
-            - name: VANTAGE_{{ $.Values.agent.networkCost.discovery.provider | upper }}_DISCOVERY_INTERVAL
+            - name: VANTAGE_{{ $.Values.agent.networkCost.discovery.provider | default "aws" | upper }}_DISCOVERY_INTERVAL
               value: "{{ . }}"
             {{- end }}
             # The agent writes the discovered ConfigMap into its own namespace so
