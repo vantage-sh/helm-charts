@@ -66,8 +66,8 @@ Name used for the network-collector resources (DaemonSet, ServiceAccount, RBAC).
 
 {{/*
 Pod selector labels for the network-collector. The `app` label MUST stay equal
-to `vantage-network-collector` because the agent discovers collectors by listing
-pods with the label selector `app=vantage-network-collector`.
+to `vantage-network-collector` so the headless Service selects the DaemonSet
+pods and the agent can discover them via the Service's EndpointSlices.
 */}}
 {{- define "vantage-kubernetes-agent.networkCollector.selectorLabels" -}}
 app: vantage-network-collector

@@ -97,7 +97,7 @@ agent:
     # existingConfigMap: ""          # BYO ConfigMap with subnets.yaml instead of inline subnets
 ```
 
-### Scheduling on tainted nodes
+### Scheduling collector pods
 
 The collector is a DaemonSet, so it tries to run on every node. Kubernetes will
 **not** schedule it onto nodes that carry custom taints unless the collector pod
@@ -123,7 +123,14 @@ agent:
         effect: "NoSchedule"
     # nodeSelector:                  # only run the collector on matching nodes
     #   kubernetes.io/os: linux
-    # affinity: {}                   # standard pod affinity/anti-affinity rules
+    # affinity:                      # for example, exclude unsupported EKS nodes
+    #   nodeAffinity:
+    #     requiredDuringSchedulingIgnoredDuringExecution:
+    #       nodeSelectorTerms:
+    #         - matchExpressions:
+    #             - key: eks.amazonaws.com/compute-type
+    #               operator: NotIn
+    #               values: [fargate, hybrid]
     subnets:
       - cidr: "10.0.0.0/16"
         region: "us-east-1"

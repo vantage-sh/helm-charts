@@ -33,7 +33,7 @@ rules:
   - "jobs"
   - "cronjobs"
   verbs: ["get", "watch", "list"]
-{{- if .Values.agent.gpu.usageMetrics}}
+{{- if or .Values.agent.gpu.usageMetrics .Values.agent.networkCost.enabled}}
 - apiGroups: ["discovery.k8s.io"]
   resources:
   - "endpointslices"

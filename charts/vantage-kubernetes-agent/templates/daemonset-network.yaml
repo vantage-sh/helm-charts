@@ -3,6 +3,7 @@
 {{- $repo := .Values.agent.networkCost.image.repository | default .Values.image.repository }}
 {{- $tag := .Values.agent.networkCost.image.tag | default .Values.image.tag | default .Chart.AppVersion }}
 {{- $source := .Values.agent.networkCost.source | default "conntrack" }}
+{{- $podAnnotations := mergeOverwrite (dict) (.Values.podAnnotations | default dict) (.Values.agent.networkCost.podAnnotations | default dict) }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -21,7 +22,7 @@ spec:
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-      {{- with .Values.podAnnotations }}
+      {{- with $podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -36,6 +37,10 @@ spec:
       hostNetwork: true
       {{- with .Values.agent.networkCost.nodeSelector }}
       nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.agent.networkCost.affinity }}
+      affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.agent.networkCost.tolerations }}
@@ -62,6 +67,9 @@ spec:
             - name: grpc
               containerPort: {{ .Values.agent.networkCost.port }}
               protocol: TCP
+            - name: metrics
+              containerPort: 8883
+              protocol: TCP
           env:
             - name: NODE_NAME
               valueFrom:
@@ -79,6 +87,14 @@ spec:
             - name: VANTAGE_EBPF_DEBUG
               value: "{{ .Values.agent.networkCost.ebpfDebug }}"
             {{- end }}
+          {{- with .Values.agent.networkCost.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.agent.networkCost.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.agent.networkCost.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
@@ -92,6 +108,16 @@ spec:
               mountPath: {{ .Values.agent.networkCost.cgroupRoot }}
               readOnly: true
             {{- end }}
+            {{- if .Values.agent.networkCost.discovery.enabled }}
+            # Agent-discovered subnet ConfigMap, mounted as a directory (not
+            # subPath) so the kubelet refreshes the file in place and the
+            # collector's loader hot-reloads it. The default collector path is
+            # /etc/vantage/discovered/subnets.yaml, matching this mount + the
+            # ConfigMap's subnets.yaml key.
+            - name: discovered-subnets
+              mountPath: /etc/vantage/discovered
+              readOnly: true
+            {{- end }}
       volumes:
         - name: subnets
           configMap:
@@ -101,5 +127,13 @@ spec:
           hostPath:
             path: {{ .Values.agent.networkCost.cgroupRoot }}
             type: Directory
+        {{- end }}
+        {{- if .Values.agent.networkCost.discovery.enabled }}
+        # Optional so the collector starts before the agent has written the
+        # discovered ConfigMap for the first time.
+        - name: discovered-subnets
+          configMap:
+            name: {{ .Values.agent.networkCost.discovery.configMapName }}
+            optional: true
         {{- end }}
 {{- end }}
